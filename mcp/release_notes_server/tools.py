@@ -1,15 +1,15 @@
 """
 Tool implementations for Release Notes MCP server.
 
-This module contains stub implementations for the three main tools:
+This module contains implementations for the three main tools:
 - get_git_history: Fetch git commit history between refs
 - get_ci_report: Load CI/CD test report from JSON
 - get_customer_watchlist: Load customer watchlist from JSON
-
-TODO: Replace stub implementations with actual logic.
 """
 import logging
 from typing import Any, Dict, List, Optional
+
+from . import git_tools
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ def get_git_history(
     """
     Fetch git commit history between two refs.
 
-    This is a STUB implementation. Real implementation will:
+    This function uses real git operations to:
     - Validate git repository exists
     - Resolve refs to SHAs
     - Check commit count and enforce max_commits
@@ -57,73 +57,14 @@ def get_git_history(
         f"(include_diffs={include_diffs}, max_commits={max_commits})"
     )
 
-    # TODO: Replace with real implementation
-    # For now, return dummy data matching the schema
-
-    stub_commits = [
-        {
-            "sha": "abc123def456",
-            "author": "Jane Dev",
-            "email": "jane@example.com",
-            "timestamp": 1705320000,
-            "date": "2024-01-15T10:30:00Z",
-            "subject": "feat: add user profile export",
-            "body": "Allows users to export their profile data in JSON format.\n\nCloses #123",
-            "files_changed": [
-                {
-                    "path": "src/profile.py",
-                    "insertions": 50,
-                    "deletions": 10,
-                    "status": "modified"
-                },
-                {
-                    "path": "tests/test_profile.py",
-                    "insertions": 30,
-                    "deletions": 0,
-                    "status": "added"
-                }
-            ]
-        },
-        {
-            "sha": "def456ghi789",
-            "author": "John Doe",
-            "email": "john@example.com",
-            "timestamp": 1705233600,
-            "date": "2024-01-14T10:00:00Z",
-            "subject": "fix: resolve authentication bug",
-            "body": "Fixed null pointer exception in login flow.",
-            "files_changed": [
-                {
-                    "path": "src/auth.py",
-                    "insertions": 5,
-                    "deletions": 3,
-                    "status": "modified"
-                }
-            ]
-        }
-    ]
-
-    return {
-        "from_ref": from_ref,
-        "to_ref": to_ref,
-        "from_sha": "abc123000000",  # Stub
-        "to_sha": "def456999999",    # Stub
-        "commits": stub_commits,
-        "stats": {
-            "total_commits": len(stub_commits),
-            "total_files_changed": 3,
-            "total_insertions": 85,
-            "total_deletions": 13,
-            "authors": ["Jane Dev", "John Doe"],
-            "date_range": {
-                "first_commit_date": "2024-01-14T10:00:00Z",
-                "last_commit_date": "2024-01-15T10:30:00Z"
-            }
-        },
-        "warnings": [
-            "⚠️  STUB: This is fake data for testing. Real git integration coming soon."
-        ]
-    }
+    # Use real git operations
+    return git_tools.get_git_history_data(
+        from_ref=from_ref,
+        to_ref=to_ref,
+        include_diffs=include_diffs,
+        max_commits=max_commits,
+        cwd="."
+    )
 
 
 def get_ci_report(report_path: str = "./ci_report.json") -> Optional[Dict[str, Any]]:

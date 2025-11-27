@@ -1,0 +1,47 @@
+{
+  "test_summary": {
+    "total": 150,
+    "passed": 145,
+    "failed": 3,
+    "skipped": 2,
+    "flaky": 1
+  },
+  "coverage": {
+    "line_percent": 82.5,
+    "branch_percent": 75.3,
+    "threshold": {
+      "line_percent": 80.0,
+      "branch_percent": 70.0
+    },
+    "previous": {
+      "line_percent": 84.0,
+      "branch_percent": 76.1
+    }
+  },
+  "failed_tests": [
+    {
+      "name": "test_authentication_timeout",
+      "file": "tests/test_auth.py",
+      "error": "TimeoutError: Auth service did not respond within 5s"
+    },
+    {
+      "name": "test_payment_processing",
+      "file": "tests/test_payment.py",
+      "error": "AssertionError: Expected status 200, got 503"
+    },
+    {
+      "name": "test_export_large_dataset",
+      "file": "tests/test_export.py",
+      "error": "MemoryError: Out of memory"
+    }
+  ],
+  "build_status": "unstable",
+  "duration_seconds": 245,
+  "metadata": {
+    "build_number": "1234",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "branch": "main",
+    "ci_system": "GitHub Actions",
+    "job_url": "https://github.com/org/repo/actions/runs/1234"
+  }
+}

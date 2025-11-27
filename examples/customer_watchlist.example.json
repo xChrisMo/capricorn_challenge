@@ -1,0 +1,46 @@
+{
+  "critical_customers": [
+    "acme-corp",
+    "globex-industries",
+    "initech",
+    "umbrella-corporation",
+    "stark-industries"
+  ],
+  "watched_features": [
+    "authentication",
+    "payment-processing",
+    "data-export",
+    "api-rate-limiting",
+    "billing",
+    "notifications",
+    "user-permissions",
+    "reporting",
+    "integrations",
+    "file-uploads"
+  ],
+  "breaking_change_keywords": [
+    "BREAKING",
+    "BREAKING CHANGE",
+    "deprecated",
+    "removed",
+    "drop support",
+    "incompatible",
+    "migration required"
+  ],
+  "high_risk_paths": [
+    "src/payment/",
+    "src/auth/",
+    "src/billing/",
+    "src/api/",
+    "src/database/",
+    "migrations/",
+    "src/security/",
+    "src/user/"
+  ],
+  "migration_patterns": [
+    "migrations/",
+    "alembic/versions/",
+    "db/migrate/",
+    "schema/"
+  ]
+}

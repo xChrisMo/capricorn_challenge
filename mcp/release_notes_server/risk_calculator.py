@@ -57,10 +57,28 @@ def calculate_release_risk(
     score = 0
     factors = []
 
-    # Count breaking changes
-    breaking_commits = [c for c in commits if c.get('is_breaking', False)]
-    breaking_count = len(breaking_commits)
+    # Single pass accumulator - O(n) instead of multiple O(n) passes
+    breaking_count = 0
+    customer_impact_count = 0
+    large_count = 0
+    all_features = set()
+    all_paths = set()
 
+    for commit in commits:
+        if commit.get('is_breaking', False):
+            breaking_count += 1
+
+        impacts = commit.get('customer_impacts', {})
+        impact_count = impacts.get('impact_count', 0)
+        if impact_count > 0:
+            customer_impact_count += 1
+            all_features.update(impacts.get('matched_features', []))
+            all_paths.update(impacts.get('matched_paths', []))
+
+        if commit.get('is_large', False):
+            large_count += 1
+
+    # Add factors based on counts
     if breaking_count > 0:
         points = breaking_count * BREAKING_CHANGE_POINTS
         score += points
@@ -69,13 +87,6 @@ def calculate_release_risk(
             'points': points,
             'severity': 'high'
         })
-
-    # Count customer-impacting commits
-    customer_impact_commits = [
-        c for c in commits
-        if c.get('customer_impacts', {}).get('impact_count', 0) > 0
-    ]
-    customer_impact_count = len(customer_impact_commits)
 
     if customer_impact_count > 0:
         # Cap at CUSTOMER_IMPACT_CAP points
@@ -86,14 +97,6 @@ def calculate_release_risk(
             'points': points,
             'severity': 'medium'
         })
-
-        # Detail which features/paths were impacted
-        all_features = set()
-        all_paths = set()
-        for commit in customer_impact_commits:
-            impacts = commit.get('customer_impacts', {})
-            all_features.update(impacts.get('matched_features', []))
-            all_paths.update(impacts.get('matched_paths', []))
 
         if all_features:
             factors.append({
@@ -107,10 +110,6 @@ def calculate_release_risk(
                 'points': 0,
                 'severity': 'info'
             })
-
-    # Count large commits
-    large_commits = [c for c in commits if c.get('is_large', False)]
-    large_count = len(large_commits)
 
     if large_count > 0:
         points = large_count * LARGE_COMMIT_POINTS
@@ -194,41 +193,44 @@ def get_risk_recommendations(
     recommendations = []
     level = risk_assessment['level']
 
-    # Breaking changes
-    breaking_commits = [c for c in commits if c.get('is_breaking', False)]
-    if breaking_commits:
+    # Single pass count accumulator
+    breaking_count = 0
+    customer_impact_count = 0
+    high_risk_path_count = 0
+    large_count = 0
+
+    for commit in commits:
+        if commit.get('is_breaking', False):
+            breaking_count += 1
+        if commit.get('customer_impacts', {}).get('impact_count', 0) > 0:
+            customer_impact_count += 1
+        if commit.get('customer_impacts', {}).get('matched_paths'):
+            high_risk_path_count += 1
+        if commit.get('is_large', False):
+            large_count += 1
+
+    # Generate recommendations based on counts
+    if breaking_count > 0:
         recommendations.append(
-            f'⚠️  Review {len(breaking_commits)} breaking change(s) with stakeholders'
+            f'⚠️  Review {breaking_count} breaking change(s) with stakeholders'
         )
         recommendations.append(
             '📝 Update migration guide and changelog with breaking changes'
         )
 
-    # Customer impacts
-    customer_impact_commits = [
-        c for c in commits
-        if c.get('customer_impacts', {}).get('impact_count', 0) > 0
-    ]
-    if customer_impact_commits:
+    if customer_impact_count > 0:
         recommendations.append(
-            f'📢 Notify customer success about {len(customer_impact_commits)} impactful change(s)'
+            f'📢 Notify customer success about {customer_impact_count} impactful change(s)'
         )
 
-    # High-risk paths
-    high_risk_commits = [
-        c for c in commits
-        if c.get('customer_impacts', {}).get('matched_paths')
-    ]
-    if high_risk_commits:
+    if high_risk_path_count > 0:
         recommendations.append(
             '🔍 Extra QA attention on auth, payment, or billing flows'
         )
 
-    # Large commits
-    large_commits = [c for c in commits if c.get('is_large', False)]
-    if large_commits:
+    if large_count > 0:
         recommendations.append(
-            f'👀 Manual review of {len(large_commits)} large commit(s) for hidden issues'
+            f'👀 Manual review of {large_count} large commit(s) for hidden issues'
         )
 
     # CI issues

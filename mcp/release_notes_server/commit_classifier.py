@@ -165,31 +165,33 @@ def match_customer_impacts(
     """
     text = (subject + ' ' + body).lower()
 
-    matched_features = []
-    matched_paths = []
-
-    # Match watched features in text
+    # Use set operations for O(n+m) instead of O(n*m)
     watched_features = watchlist.get('watched_features', [])
-    for feature in watched_features:
-        feature_lower = feature.lower()
-        if feature_lower in text:
-            matched_features.append(feature)
+    watched_features_lower = {feature.lower(): feature for feature in watched_features}
+    matched_features = [
+        watched_features_lower[term]
+        for term in watched_features_lower
+        if term in text
+    ]
 
-    # Match high-risk paths in changed files
+    # Match high-risk paths - use set to avoid duplicates, O(n*m) but necessary
     high_risk_paths = watchlist.get('high_risk_paths', [])
-    for changed_file in file_paths:
-        for risk_path in high_risk_paths:
-            if changed_file.startswith(risk_path):
-                if risk_path not in matched_paths:
-                    matched_paths.append(risk_path)
+    matched_paths_set = {
+        risk_path
+        for changed_file in file_paths
+        for risk_path in high_risk_paths
+        if changed_file.startswith(risk_path)
+    }
+    matched_paths = sorted(matched_paths_set)
 
-    # Match critical customers mentioned in text
-    matched_customers = []
+    # Match critical customers - use set operations
     critical_customers = watchlist.get('critical_customers', [])
-    for customer in critical_customers:
-        customer_lower = customer.lower()
-        if customer_lower in text:
-            matched_customers.append(customer)
+    critical_customers_lower = {customer.lower(): customer for customer in critical_customers}
+    matched_customers = [
+        critical_customers_lower[term]
+        for term in critical_customers_lower
+        if term in text
+    ]
 
     impact_count = len(matched_features) + len(matched_paths) + len(matched_customers)
 

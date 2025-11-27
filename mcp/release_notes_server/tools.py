@@ -10,6 +10,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from . import git_tools
+from . import file_utils
 
 logger = logging.getLogger(__name__)
 
@@ -71,13 +72,6 @@ def get_ci_report(report_path: str = "./ci_report.json") -> Optional[Dict[str, A
     """
     Load and parse CI/CD test report from JSON file.
 
-    This is a STUB implementation. Real implementation will:
-    - Check if file exists (return None if missing - graceful degradation)
-    - Read file with proper encoding
-    - Parse JSON with error handling
-    - Validate schema (basic checks)
-    - Return structured data or None
-
     Args:
         report_path: Path to CI report JSON file (default: ./ci_report.json)
 
@@ -97,50 +91,7 @@ def get_ci_report(report_path: str = "./ci_report.json") -> Optional[Dict[str, A
     """
     logger.info(f"get_ci_report called: {report_path}")
 
-    # TODO: Replace with real implementation
-    # For now, return dummy data matching the schema
-
-    return {
-        "test_summary": {
-            "total": 150,
-            "passed": 148,
-            "failed": 2,
-            "skipped": 0,
-            "flaky": 1
-        },
-        "coverage": {
-            "line_percent": 85.5,
-            "branch_percent": 78.2,
-            "threshold": {
-                "line_percent": 80.0,
-                "branch_percent": 75.0
-            },
-            "previous": {
-                "line_percent": 87.0,
-                "branch_percent": 79.5
-            }
-        },
-        "failed_tests": [
-            {
-                "name": "test_user_authentication",
-                "file": "tests/test_auth.py",
-                "error": "AssertionError: Expected 200, got 401"
-            },
-            {
-                "name": "test_payment_processing",
-                "file": "tests/test_payment.py",
-                "error": "TimeoutError: Payment gateway did not respond"
-            }
-        ],
-        "build_status": "unstable",
-        "duration_seconds": 120,
-        "metadata": {
-            "build_number": "1234",
-            "timestamp": "2024-01-15T10:30:00Z",
-            "branch": "main",
-            "_stub": True  # Flag to indicate this is stub data
-        }
-    }
+    return file_utils.load_ci_report(report_path)
 
 
 def get_customer_watchlist(
@@ -148,13 +99,6 @@ def get_customer_watchlist(
 ) -> Dict[str, Any]:
     """
     Load customer watchlist with critical accounts and features.
-
-    This is a STUB implementation. Real implementation will:
-    - Check if file exists (return defaults if missing - graceful degradation)
-    - Read file with proper encoding
-    - Parse JSON with error handling
-    - Merge with sensible defaults
-    - Return structured data
 
     Args:
         watchlist_path: Path to watchlist JSON file (default: ./customer_watchlist.json)
@@ -174,42 +118,7 @@ def get_customer_watchlist(
     """
     logger.info(f"get_customer_watchlist called: {watchlist_path}")
 
-    # TODO: Replace with real implementation
-    # For now, return default watchlist
-
-    # Default watchlist (used if file missing or as base for merging)
-    default_watchlist = {
-        "critical_customers": ["acme-corp", "globex", "initech"],
-        "watched_features": [
-            "authentication",
-            "payment-processing",
-            "data-export",
-            "API rate limiting"
-        ],
-        "breaking_change_keywords": [
-            "BREAKING",
-            "BREAKING CHANGE",
-            "deprecated",
-            "removed",
-            "drop support",
-            "incompatible"
-        ],
-        "high_risk_paths": [
-            "src/payment/",
-            "src/auth/",
-            "src/billing/",
-            "src/api/",
-            "migrations/"
-        ],
-        "migration_patterns": [
-            "migrations/",
-            "alembic/versions/",
-            "db/migrate/"
-        ],
-        "_stub": True  # Flag to indicate this is stub data
-    }
-
-    return default_watchlist
+    return file_utils.load_customer_watchlist(watchlist_path)
 
 
 def register_tools(server: Any) -> None:

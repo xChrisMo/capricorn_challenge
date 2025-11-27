@@ -1,0 +1,25 @@
+{
+  "name": "release-notes-assistant",
+  "description": "Automated release notes and release quality reports from git history, CI, and customer watchlists.",
+  "author": "ChrisMo",
+  "version": "0.1.0",
+  "mcpServers": {
+    "release-notes-server": {
+      "command": "python",
+      "args": ["-m", "mcp.release_notes_server"]
+    }
+  },
+  "commands": {
+    "release-notes": {
+      "path": ".claude/commands/release-notes.md"
+    }
+  },
+  "skills": {
+    "release-notes": {
+      "path": ".claude/skills/release-notes.md"
+    },
+    "release-notes-guide": {
+      "path": ".claude/skills/release-notes-guide.md"
+    }
+  }
+}
